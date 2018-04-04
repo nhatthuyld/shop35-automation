@@ -17,6 +17,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -24,7 +25,7 @@ import com.examples.seleniumrc.util.PropertyReader;
 
 import org.openqa.selenium.JavascriptExecutor;
 
-public class shop365Test {
+public class OrderingTest {
 
 	WebDriver driver;
 	
@@ -43,6 +44,8 @@ public class shop365Test {
 	// public void tearDown() throws Exception {
 	// driver.quit();
 	// }
+	
+	 ArrayList<Product> listProductSellerA = new ArrayList<Product>();
 
 	@Test
 	public void BookingCasual() throws InterruptedException {
@@ -52,14 +55,15 @@ public class shop365Test {
 		driver.get("http://shop365.qrmartdemo.info/products/buoi-nam-roi-111111-2222.html");
 		Thread.sleep(4000);
 		Book();
-		driver.get("http://shop365.qrmartdemo.info/products/nhan-tim-352.html");
-		Thread.sleep(4000);
-		Book();
+//		driver.get("http://shop365.qrmartdemo.info/products/nhan-tim-352.html");
+//		Thread.sleep(4000);
+//		Book();
 		driver.get("http://shop365.qrmartdemo.info/checkout-finish.html");
 		
 		checkOut();
 		
-		PaybyPaypal();
+		//PaybyPaypal();
+		PaybyCreditcard();
 		
 //		
 	}
@@ -72,13 +76,18 @@ public class shop365Test {
 	}
 	
 	public void Book() throws InterruptedException {
+		String quantity="10";
 
 		findCss("[type='number']").clear();
-		findCss("[type='number']").sendKeys("10");
+		findCss("[type='number']").sendKeys(quantity);
 		clickButtonCss(".shipping_options div [type='radio']");
-	//	Thread.sleep(2000);
+		//Thread.sleep(2000);
 //		Select select = new Select(driver.findElement(By.cssSelector(".select2-results__options")));
 //		select.selectByIndex(2);
+		
+		getInfoProduct();
+		
+		waitForElementAppear(".select2-selection__arrow");
 		clickButtonCss(".select2-selection__arrow");
 		clickButtonCss(".select2-results__options li:nth-child(2)");
 		clickButtonCss("#add-to-cart");
@@ -88,24 +97,53 @@ public class shop365Test {
 		findCss("#unitno").sendKeys("3434");
 		findCss("#postal_code").sendKeys("11122333");
 		clickButtonCss(".btn-style-2.pull-right");
-		clickButtonCss("#radio_button_7");
-		clickButtonCss(".pull-right.btn-style-1");
+		
+	}
+	
+	public void getInfoProduct() throws InterruptedException {
+		Product p = new Product();
+		p.name = findCss(".page-title").getText();
+		p.sku = findCss(".product-code").getText();
+		p.price = Integer.parseInt(findCss(".price").getText());
+		p.pointshop = Integer.parseInt(findCss(".label-point").getText());
+		
 	}
 	
 	public void PaybyPaypal() throws InterruptedException {
+		
+		clickButtonCss("#radio_button_7");
+		clickButtonCss(".pull-right.btn-style-1");
+		
 		Alert alertDate = driver.switchTo().alert();
 		alertDate.accept();
 		
 		findCss(".fieldWrapper #email").sendKeys("shop365@shop365.com");
 		clickButtonCss(".actions #btnNext");
-		Thread.sleep(4000);
+		//Thread.sleep(4000);
+		waitForPageLoaded();
 		findCss(".fieldWrapper #password").sendKeys("shop365@shop365.com");
 		clickButtonCss(".actions #btnLogin");
-		Thread.sleep(4000);
+		//Thread.sleep(4000);
+		waitForPageLoaded();
 		clickButtonCss("#confirmButtonTop");
 	}
 	
+	public void PaybyCreditcard() throws InterruptedException {
+		clickButtonCss("#radio_button_6");
+		
+		findCss("[name='__privateStripeFrame3']").sendKeys("424242424242424242424242424");
+		Thread.sleep(2000);
+		clickButtonCss(".pull-right.btn-style-1");
+		
+		Alert alertDate = driver.switchTo().alert();
+		alertDate.accept();
+		
+	}
 	
+	public void waitForElementAppear(String s) {
+		WebDriverWait wait = new WebDriverWait(driver, 15);
+		  wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(s)));
+	}
 
 	public void waitForPageLoaded() {
 		ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
@@ -184,6 +222,12 @@ public class shop365Test {
 			System.exit(0);
 			return null;
 		}
+	}
+	
+	public String getAttributeElement(String s, String attb) throws InterruptedException {
+		WebElement e = driver.findElement(By.cssSelector(s));
+		String result = e.getAttribute(attb);
+		return result;
 	}
 
 
