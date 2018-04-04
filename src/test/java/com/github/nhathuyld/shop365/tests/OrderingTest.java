@@ -75,43 +75,45 @@ public class OrderingTest {
 	
 	public void Login() throws InterruptedException {
 		driver.get("http://shop365.qrmartdemo.info/login.html");
-		findCss("#emmail_login").sendKeys("nhatthuyadvn@gmail.com");
-		findCss("#password_login").sendKeys("123456");
+		this.common.findCss("#emmail_login").sendKeys("nhatthuyadvn@gmail.com");
+		this.common.findCss("#password_login").sendKeys("123456");
 		this.common.clickButtonCss(".fa.fa-lock");
 	}
 	
 	public void Book() throws InterruptedException {
 		String quantity="10";
 
-		findCss("[type='number']").clear();
-		findCss("[type='number']").sendKeys(quantity);
-		this.common.clickButtonCss(".shipping_options div [type='radio']");
+		this.common.findCss("[type='number']").clear();
+		this.common.findCss("[type='number']").sendKeys(quantity);
+		this.common.clickButtonCss(".shipping_options div:nth-child(2) [type='radio']");
 		//Thread.sleep(2000);
 //		Select select = new Select(driver.findElement(By.cssSelector(".select2-results__options")));
 //		select.selectByIndex(2);
 		
-		getInfoProduct();
 		
-		waitForElementAppear(".select2-selection__arrow");
+		
+		this.common.waitForElementAppear(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-results__options li:nth-child(2)");
+		getInfoProduct();
 		this.common.clickButtonCss("#add-to-cart");
 	}
 	public void checkOut() throws InterruptedException {
 		this.common.clickButtonCss(".col-md-6.col-md-offset-3.update-address");
-		findCss("#unitno").sendKeys("3434");
-		findCss("#postal_code").sendKeys("11122333");
+		this.common.findCss("#unitno").sendKeys("3434");
+		this.common.findCss("#postal_code").sendKeys("11122333");
 		this.common.clickButtonCss(".btn-style-2.pull-right");
 		
 	}
 	
 	public void getInfoProduct() throws InterruptedException {
 		Product p = new Product();
-		p.name = findCss(".page-title").getText();
-		p.sku = findCss(".product-code").getText();
-		p.price = Integer.parseInt(findCss(".price").getText());
-		p.pointshop = Integer.parseInt(findCss(".label-point").getText());
-		
+		p.name = this.common.findCss(".page-title").getText();
+		p.sku = this.common.findCss(".product-code").getText();
+		p.price = Double.parseDouble(this.common.findCss(".price").getText().replace("$",""));
+		p.pointshop = Double.parseDouble(this.common.findCss(".label-point").getText().replace("x","").replace("pts", "").replace(" ",""));
+		p.shippingfee = Double.parseDouble(this.common.findCss(".show-shipping-fee").getText().replace("$","").replace("+",""));
+		p.quantity = Double.parseDouble(this.common.getAttributeElement("#qty1","value"));
 	}
 	
 	public void PaybyPaypal() throws InterruptedException {
@@ -122,21 +124,21 @@ public class OrderingTest {
 		Alert alertDate = driver.switchTo().alert();
 		alertDate.accept();
 		
-		findCss(".fieldWrapper #email").sendKeys("shop365@shop365.com");
+		this.common.findCss(".fieldWrapper #email").sendKeys("shop365@shop365.com");
 		this.common.clickButtonCss(".actions #btnNext");
 		//Thread.sleep(4000);
-		waitForPageLoaded();
-		findCss(".fieldWrapper #password").sendKeys("shop365@shop365.com");
+		this.common.waitForPageLoaded();
+		this.common.findCss(".fieldWrapper #password").sendKeys("shop365@shop365.com");
 		this.common.clickButtonCss(".actions #btnLogin");
 		//Thread.sleep(4000);
-		waitForPageLoaded();
+		this.common.waitForPageLoaded();
 		this.common.clickButtonCss("#confirmButtonTop");
 	}
 	
 	public void PaybyCreditcard() throws InterruptedException {
 		this.common.clickButtonCss("#radio_button_6");
 		
-		findCss("[name='__privateStripeFrame3']").sendKeys("424242424242424242424242424");
+		this.common.findCss("[name='__privateStripeFrame3']").sendKeys("424242424242424242424242424");
 		Thread.sleep(2000);
 		this.common.clickButtonCss(".pull-right.btn-style-1");
 		
@@ -145,95 +147,11 @@ public class OrderingTest {
 		
 	}
 	
-	public void waitForElementAppear(String s) {
-		WebDriverWait wait = new WebDriverWait(driver, 15);
-		  wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(s)));
-	}
-
-	public void waitForPageLoaded() {
-		ExpectedCondition<Boolean> expectation = new ExpectedCondition<Boolean>() {
-			public Boolean apply(WebDriver driver) {
-				return ((JavascriptExecutor) driver).executeScript("return document.readyState").toString()
-						.equals("complete");
-			}
-		};
-		try {
-			Thread.sleep(1000);
-			WebDriverWait wait = new WebDriverWait(driver, 30);
-			wait.until(expectation);
-		} catch (Throwable error) {
-			Assert.fail("Timeout waiting for Page Load Request to complete.");
-		}
-
-	}
-
-	public boolean assertDate() throws InterruptedException {
-
-		try {
-			Alert alertDate = driver.switchTo().alert();
-			alertDate.accept();
-			Thread.sleep(400);
-			return true;
-		} catch (NoAlertPresentException Ex) {
-			Thread.sleep(400);
-			return false;
-		}
-
-	}
-
-	public Boolean clickButtonXpath(String idButton) {
-		try {
-			WebElement itemElement = driver.findElement(By.xpath((idButton)));
-			itemElement.click();
-			Thread.sleep(200);
-			return true;
-		} catch (Exception ex) {
-			System.out.println("Not found for click button:" + idButton);
-			System.exit(0);
-			return false;
-		}
-	}
-
-//	public Boolean this.common.clickButtonCss(String idButton) {
-//		try {
-//			WebElement itemElement = driver.findElement(By.cssSelector((idButton)));
-//			itemElement.click();
-//			Thread.sleep(200);
-//			return true;
-//		} catch (Exception ex) {
-//			System.out.println("Not found for click button:" + idButton);
-//			System.exit(0);
-//			return false;
-//		}
-//	}
-
-	public WebElement findXpath(String idButton) throws InterruptedException {
-		try {
-			WebElement itemElement = driver.findElement(By.xpath(idButton));
-			return itemElement;
-		} catch (Exception ex) {
-			System.out.println("Not found for find button:" + idButton);
-			System.exit(0);
-			return null;
-		}
-	}
-
-	public WebElement findCss(String idButton) throws InterruptedException {
-		try {
-			WebElement itemElement = driver.findElement(By.cssSelector(idButton));
-			return itemElement;
-		} catch (Exception ex) {
-			System.out.println("Not found for find button:" + idButton);
-			System.exit(0);
-			return null;
-		}
-	}
 	
-	public String getAttributeElement(String s, String attb) throws InterruptedException {
-		WebElement e = driver.findElement(By.cssSelector(s));
-		String result = e.getAttribute(attb);
-		return result;
-	}
+
+	
+
+
 
 
 }
