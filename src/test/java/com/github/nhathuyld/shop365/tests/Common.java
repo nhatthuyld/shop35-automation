@@ -51,7 +51,7 @@ public class Common {
 			return itemElement;
 		} catch (Exception ex) {
 			System.out.println("Not found for find button:" + idButton);
-			System.exit(0);
+			//System.exit(0);
 			return null;
 		}
 	}

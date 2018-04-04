@@ -30,8 +30,11 @@ import org.openqa.selenium.JavascriptExecutor;
 
 public class OrderingTest {
 
+	private static final WebElement NULL = null;
 	WebDriver driver;
 	Common common;
+	
+	Double subTotal,shippingFee,total,pointShop;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -57,13 +60,7 @@ public class OrderingTest {
 		
 		Login();
 		
-		driver.get("http://shop365.qrmartdemo.info/products/buoi-nam-roi-111111-2222.html");
-		Thread.sleep(4000);
-		Book();
-//		driver.get("http://shop365.qrmartdemo.info/products/nhan-tim-352.html");
-//		Thread.sleep(4000);
-//		Book();
-		driver.get("http://shop365.qrmartdemo.info/checkout-finish.html");
+		addProduct();
 		
 		checkOut();
 		
@@ -74,18 +71,18 @@ public class OrderingTest {
 	}
 	
 	public void Login() throws InterruptedException {
+		
 		driver.get("http://shop365.qrmartdemo.info/login.html");
 		this.common.findCss("#emmail_login").sendKeys("nhatthuyadvn@gmail.com");
 		this.common.findCss("#password_login").sendKeys("123456");
 		this.common.clickButtonCss(".fa.fa-lock");
 	}
 	
-	public void Book() throws InterruptedException {
-		String quantity="10";
+	public void Book(String quantity) throws InterruptedException {
 
 		this.common.findCss("[type='number']").clear();
 		this.common.findCss("[type='number']").sendKeys(quantity);
-		this.common.clickButtonCss(".shipping_options div:nth-child(2) [type='radio']");
+		this.common.clickButtonCss(".shipping_options div [type='radio']");
 		//Thread.sleep(2000);
 //		Select select = new Select(driver.findElement(By.cssSelector(".select2-results__options")));
 //		select.selectByIndex(2);
@@ -98,7 +95,20 @@ public class OrderingTest {
 		getInfoProduct();
 		this.common.clickButtonCss("#add-to-cart");
 	}
+	
+	public void addProduct() throws InterruptedException {
+		
+		driver.get("http://shop365.qrmartdemo.info/products/buoi-nam-roi-111111-2222.html");
+		Thread.sleep(4000);
+		Book("10");
+		driver.get("http://shop365.qrmartdemo.info/products/nhan-tim-352.html");
+		Thread.sleep(4000);
+		Book("5");
+		driver.get("http://shop365.qrmartdemo.info/checkout-finish.html");
+		
+	}
 	public void checkOut() throws InterruptedException {
+		
 		this.common.clickButtonCss(".col-md-6.col-md-offset-3.update-address");
 		this.common.findCss("#unitno").sendKeys("3434");
 		this.common.findCss("#postal_code").sendKeys("11122333");
@@ -107,15 +117,32 @@ public class OrderingTest {
 	}
 	
 	public void getInfoProduct() throws InterruptedException {
+		
 		Product p = new Product();
 		p.name = this.common.findCss(".page-title").getText();
 		p.sku = this.common.findCss(".product-code").getText();
-		p.price = Double.parseDouble(this.common.findCss(".price").getText().replace("$",""));
-		p.pointshop = Double.parseDouble(this.common.findCss(".label-point").getText().replace("x","").replace("pts", "").replace(" ",""));
-		p.shippingfee = Double.parseDouble(this.common.findCss(".show-shipping-fee").getText().replace("$","").replace("+",""));
+		p.price = Double.parseDouble(this.common.findCss("[itemprop='price']").getText().replace("$",""));
+		p.pointshop = findPointShop();
+		p.shippingfee = findShippingFee();
 		p.quantity = Double.parseDouble(this.common.getAttributeElement("#qty1","value"));
+		
+		listProductSellerA.add(p);
 	}
 	
+	public Double  findPointShop() throws InterruptedException {
+		
+		Double point = (double) 0;
+		if(this.common.findCss(".label-point") == null)
+			return point;
+			return Double.parseDouble(this.common.findCss(".label-point").getText().replace("x","").replace("pts", "").replace(" ",""));
+	}
+	
+	public Double  findShippingFee() throws InterruptedException {
+		Double fee = (double) 0;
+		if(this.common.findCss(".show-shipping-fee") == null)
+			return fee;
+			return Double.parseDouble(this.common.findCss(".show-shipping-fee").getText().replace("$","").replace("+",""));
+	}
 	public void PaybyPaypal() throws InterruptedException {
 		
 		this.common.clickButtonCss("#radio_button_7");
@@ -136,6 +163,7 @@ public class OrderingTest {
 	}
 	
 	public void PaybyCreditcard() throws InterruptedException {
+		
 		this.common.clickButtonCss("#radio_button_6");
 		
 		this.common.findCss("[name='__privateStripeFrame3']").sendKeys("424242424242424242424242424");
