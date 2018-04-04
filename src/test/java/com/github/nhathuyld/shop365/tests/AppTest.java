@@ -1,4 +1,4 @@
-package com.github.nhatthuyld.shop365.utils;
+package com.github.nhathuyld.shop365.tests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
