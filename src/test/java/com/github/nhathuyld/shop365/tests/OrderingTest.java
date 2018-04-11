@@ -1,5 +1,6 @@
 package com.github.nhathuyld.shop365.tests;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.internal.FindsByCssSelector;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -33,8 +35,11 @@ public class OrderingTest {
 	private static final WebElement NULL = null;
 	WebDriver driver;
 	Common common;
+	int pointInvoice;
+	double subtotalInvoice = 0, TotalInvoice = 0, shippingFeeInvoice = 0, discountInvoice = 0;
+	String idInvoice, transactionInvoice, paymentMethod;
 	
-	Double subTotal,shippingFee,total,pointShop;
+	
 	
 	@Before
 	public void setUp() throws Exception {
@@ -44,8 +49,6 @@ public class OrderingTest {
 		driver.manage().window().maximize();
 		this.common = new Common(driver);
 		
-		
-
 	}
 
 	// @After
@@ -53,20 +56,28 @@ public class OrderingTest {
 	// driver.quit();
 	// }
 	
-	 ArrayList<Product> listProductSellerA = new ArrayList<Product>();
+	 ArrayList<Product> listProductSellerX = new ArrayList<Product>();
+	 ArrayList<Seller> listSeller = new ArrayList<Seller>();
 
 	@Test
-	public void BookingCasual() throws InterruptedException {
+	public void BookingCasual() throws InterruptedException, ParseException {
+		this.common.CreatCartCoupon("15");
 		
-		Login();
+//		Login();
+//		
+//		addProduct();
+//		getCoupon("#block-seller-95");
+//		
+//		checkOut();
 		
-		addProduct();
-		
-		checkOut();
+//		checkProductSeller("#block-seller-83",0);
+//		checkProductSeller("#block-seller-65",1);
+//		checkTotalInvoice();
 		
 		//PaybyPaypal();
-		PaybyCreditcard();
+	//	PaybyCreditcard();
 		
+	//	getInfoInvoice();
 //		
 	}
 	
@@ -86,25 +97,29 @@ public class OrderingTest {
 		//Thread.sleep(2000);
 //		Select select = new Select(driver.findElement(By.cssSelector(".select2-results__options")));
 //		select.selectByIndex(2);
-		
-		
-		
+			
 		this.common.waitForElementAppear(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-results__options li:nth-child(2)");
-		getInfoProduct();
+		getInfoProduct(listProductSellerX);
 		this.common.clickButtonCss("#add-to-cart");
 	}
 	
 	public void addProduct() throws InterruptedException {
 		
-		driver.get("http://shop365.qrmartdemo.info/products/buoi-nam-roi-111111-2222.html");
+		driver.get("http://shop365.qrmartdemo.info/products/du-du-0001.html");
 		Thread.sleep(4000);
 		Book("10");
-		driver.get("http://shop365.qrmartdemo.info/products/nhan-tim-352.html");
+		driver.get("http://shop365.qrmartdemo.info/products/tao-xanh-0006.html");
 		Thread.sleep(4000);
 		Book("5");
+		
+		driver.get("http://shop365.qrmartdemo.info/products/tao-0005.html");
+		Thread.sleep(4000);
+		Book("3");
+		
 		driver.get("http://shop365.qrmartdemo.info/checkout-finish.html");
+			
 		
 	}
 	public void checkOut() throws InterruptedException {
@@ -116,33 +131,22 @@ public class OrderingTest {
 		
 	}
 	
-	public void getInfoProduct() throws InterruptedException {
+	public void getInfoProduct(ArrayList<Product> listProductSellerX) throws InterruptedException {
 		
 		Product p = new Product();
 		p.name = this.common.findCss(".page-title").getText();
 		p.sku = this.common.findCss(".product-code").getText();
 		p.price = Double.parseDouble(this.common.findCss("[itemprop='price']").getText().replace("$",""));
-		p.pointshop = findPointShop();
-		p.shippingfee = findShippingFee();
+		p.xPointShop = this.common.findPointShop();
+		p.shippingfee = this.common.findShippingFee();
 		p.quantity = Double.parseDouble(this.common.getAttributeElement("#qty1","value"));
 		
-		listProductSellerA.add(p);
+		listProductSellerX.add(p);
 	}
 	
-	public Double  findPointShop() throws InterruptedException {
-		
-		Double point = (double) 0;
-		if(this.common.findCss(".label-point") == null)
-			return point;
-			return Double.parseDouble(this.common.findCss(".label-point").getText().replace("x","").replace("pts", "").replace(" ",""));
-	}
 	
-	public Double  findShippingFee() throws InterruptedException {
-		Double fee = (double) 0;
-		if(this.common.findCss(".show-shipping-fee") == null)
-			return fee;
-			return Double.parseDouble(this.common.findCss(".show-shipping-fee").getText().replace("$","").replace("+",""));
-	}
+	
+	
 	public void PaybyPaypal() throws InterruptedException {
 		
 		this.common.clickButtonCss("#radio_button_7");
@@ -174,12 +178,113 @@ public class OrderingTest {
 		alertDate.accept();
 		
 	}
+	public void getInfoOneProductSellerCheckOutCart(String idSeller,int i, int orderSeller) throws InterruptedException {
+		
+	}
+	
+	public void checkOneProductSellerCheckOutCart(String idSeller,int i, int orderSeller) throws InterruptedException {
+		String order = Integer.toString(i+2);
+		
+		String name = this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(2) a").getText();
+		
+		String sku =  this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(2) small").getText();
+		
+		String shippingname = this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(2) .shipping-fee").getText();
+		
+		Double price = Double.parseDouble(this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(3) span").getText().replace("$",""));
+		
+		 
+		Double quantity = Double.parseDouble(this.common.getAttributeElement(idSeller+" tr:nth-child("+order+") td:nth-child(4) input", "value"));
+		
+		int pointProduct = this.common.getPointProduct(this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(5)").getText());	
+	
+		Double xPoint =  Double.parseDouble(this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(5) span").getText().replace("pts","").replace("x",""));
+		
+		Double totalProductPrice =  Double.parseDouble(this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(6) span").getText().replace("$",""));
+		
+		this.common.equalString(name, listProductSellerX.get(i).name);	
+		this.common.equalString(sku, listProductSellerX.get(i).sku);
+		this.common.equalString(shippingname, listProductSellerX.get(i).shippingName);
+		this.common.compareDouble(price, listProductSellerX.get(i).price);
+		this.common.compareDouble(quantity, listProductSellerX.get(i).quantity);
+		this.common.compareInt(pointProduct,(int)listProductSellerX.get(i).price);
+		this.common.compareDouble(xPoint-1, listProductSellerX.get(i).xPointShop);
+		this.common.compareDouble(price*quantity,totalProductPrice);
+		
+		listSeller.get(orderSeller).sellerName = this.common.findCss(idSeller+" span").getText();
+		listSeller.get(orderSeller).subtotal += totalProductPrice;
+		listSeller.get(orderSeller).shippingFee += listProductSellerX.get(i).shippingfee;
+		listSeller.get(orderSeller).pointEarnSellerandShop += pointProduct * xPoint * quantity; 
+		
+	}
+	
+	public void checkProductSeller(String idSeller, int orderSeller) throws InterruptedException {
+		Seller X = new Seller();
+		X.subtotal = 0.0;
+		X.shippingFee = 0.0;
+		X.pointEarnSellerandShop = 0;
+		X.discount = this.common.findDiscount(idSeller);
+		
+		listSeller.add(X);
+		listSeller.get(orderSeller).numberproduct = this.common.getNumberProduct(idSeller);
+		for(int i = 0; i <= listSeller.get(orderSeller).numberproduct-1; i++)
+		{
+			checkOneProductSellerCheckOutCart(idSeller, i, orderSeller);
+		}
+	
+		Assert.assertEquals("Fail-check items of seller ", Boolean.TRUE,
+				listSeller.get(orderSeller).numberproduct == this.common.findAndGetNumeric(idSeller+" .count-item-seller"));
+		
+		Assert.assertEquals("Fail-check point earn of seller ", Boolean.TRUE,
+				listSeller.get(orderSeller).pointEarnSellerandShop == this.common.findAndGetNumeric(idSeller+"  .text-right"));
+		//k co discount
+	
+		Assert.assertEquals("Fail-check subtotal of seller ", Boolean.TRUE,
+				listSeller.get(orderSeller).subtotal.equals(this.common.findAndGetNumericDouble(idSeller+" tfoot tr td:nth-child(3)")));
+		
+		
+		Assert.assertEquals("Fail-check shiping fee of seller ", Boolean.TRUE,
+				listSeller.get(orderSeller).shippingFee.equals(this.common.findAndGetNumericDouble(idSeller+" tfoot tr:nth-child(2) td:nth-child(2)")));
+		
+		listSeller.get(orderSeller).total = listSeller.get(orderSeller).subtotal + listSeller.get(orderSeller).shippingFee - listSeller.get(orderSeller).discount;
+		
+		Assert.assertEquals("Fail-check total of seller ", Boolean.TRUE,
+				listSeller.get(orderSeller).total.equals(this.common.findAndGetNumericDouble(idSeller+" tfoot tr:nth-child(3) td:nth-child(2)")));	
+		
+	}
+	
+	public void checkTotalInvoice() throws InterruptedException {
+		for(int i=0; i<listSeller.size(); i++)
+		{
+			subtotalInvoice += listSeller.get(i).subtotal;
+			TotalInvoice += listSeller.get(i).total;
+			shippingFeeInvoice += listSeller.get(i).shippingFee;
+			discountInvoice += listSeller.get(i).discount;
+		}
+		Assert.assertEquals("Fail-subtotal invoice ", Boolean.TRUE,this.common.findAndGetNumericDouble(".cart-subtotal.no-before-text.td-half").equals(subtotalInvoice) );
+		Assert.assertEquals("Fail-shipping fee invoice ", Boolean.TRUE,this.common.findAndGetNumericDouble("tbody #mask-shipping-total").equals(shippingFeeInvoice));
+		Assert.assertEquals("Fail-total invoice ", Boolean.TRUE,this.common.findAndGetNumericDouble("tbody .cart-total").equals(TotalInvoice));
+		Assert.assertEquals("Fail-dicount invoice ", Boolean.TRUE,this.common.findAndGetNumericDouble("#total-discount").equals(discountInvoice));
+				
+	}
+	
+	public void getInfoInvoice() throws InterruptedException {
+		idInvoice = this.common.findCss(".invoice-col strong").getText();
+		transactionInvoice = this.common.findCss(".invoice-col div:nth-child(2) span").getText();
+		paymentMethod = this.common.findCss(".invoice-col div:nth-child(3) span").getText();
+		
+		Assert.assertEquals("Fail-total invoice -thank you page ", Boolean.TRUE,this.common.findAndGetNumericDouble(".invoice-col div:nth-child(4) span").equals(TotalInvoice));
+	}
+	
+	public void getCoupon(String idSeller) throws InterruptedException {
+	
+		this.common.clickButtonCss(idSeller+" .btn.btn-sm.open-modal-coupon");
+		this.common.waitForElementAppear(".modal-body tbody tr:last-child input");
+		this.common.clickButtonCss(".modal-body tbody tr:last-child input");
+		this.common.clickButtonCss(".modal-footer button");
+		Thread.sleep(1000);
+	
+	}
 	
 	
-
-	
-
-
-
-
 }
