@@ -14,6 +14,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -27,6 +28,11 @@ public class Common {
 	WebDriver driver;
 	public Common(WebDriver driver){
 		this.driver = driver;
+	}
+	public void moveToElement(String idButton) {
+	Actions actions = new Actions(driver);
+	WebElement mainMenu = driver.findElement(By.linkText(idButton));
+	actions.moveToElement(mainMenu);
 	}
 
 	//static ;
@@ -244,8 +250,7 @@ public class Common {
 		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
 		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
 		findCss("#seller_coupon_seller_price").sendKeys("100");
-		//clickButtonCss(".cke_wysiwyg_frame.cke_reset");
-		
+		//go to iframe
 		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
 	                + driver.findElement(
 	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
@@ -253,11 +258,39 @@ public class Common {
 	    driver.switchTo().frame(descriptionElement);
 	    WebElement editable = driver.switchTo().activeElement();
 	    editable.sendKeys("Discount cart");
-	    Thread.sleep(3000);    
+	    driver.switchTo().defaultContent();//out of iframe
 	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
 
-
+	}
 	
+	public void CreatCartCouponExceptSomeProduct(String value,String nameProduct) throws InterruptedException, ParseException {
+		logInSellerPage("rosa.linky@gmail.com","123456");
+		waitForPageLoaded();
+		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		waitForPageLoaded();
+		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
+		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
+		select.selectByIndex(3);
+		findCss("#seller_coupon_seller_coupon_value").sendKeys(value);	
+		clickButtonCss(".select2-selection.select2-selection--multiple");
+		findXpath("//li[contains(text(),'"+nameProduct+"')]").click();
+		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
+		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
+		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		findCss("#seller_coupon_seller_price").sendKeys("100");
+		//go to iframe
+		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
+	                + driver.findElement(
+	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
+	    WebElement descriptionElement = findCss((".cke_wysiwyg_frame.cke_reset"));
+	    driver.switchTo().frame(descriptionElement);
+	    WebElement editable = driver.switchTo().activeElement();
+	    editable.sendKeys("Discount cart");
+	    driver.switchTo().defaultContent();//out of iframe
+	    clickButtonCss("#new_seller_coupon_seller");
+	    Thread.sleep(1000);
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
 	}
 	
 
