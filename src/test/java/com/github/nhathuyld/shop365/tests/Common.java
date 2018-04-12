@@ -254,10 +254,8 @@ public class Common {
 	    WebElement editable = driver.switchTo().activeElement();
 	    editable.sendKeys("Discount cart");
 	    Thread.sleep(3000);    
-//	    clickButtonCss("[type='submit']");
-//	    clickButtonCss("[type='submit']");
-	    
-	    findCss("[type='submit']").submit();
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
 	
 	   
 
