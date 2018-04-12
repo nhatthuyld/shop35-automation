@@ -61,8 +61,9 @@ public class OrderingTest {
 
 	@Test
 	public void BookingCasual() throws InterruptedException, ParseException {
-		this.common.CreatCartCouponExceptSomeProduct("15","thuoc doc");
+		//this.common.CreatCartCouponExceptSomeProduct("15","thuoc doc");
 		//this.common.CreatCartCoupon("14");
+		this.common.CreatProductCouponPercent("15","thuoc doc");
 		
 //		Login();
 //		

@@ -262,6 +262,31 @@ public class Common {
 	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
 
 	}
+	public void CreatCartCouponPercent(String value) throws InterruptedException, ParseException {
+		logInSellerPage("rosa.linky@gmail.com","123456");
+		waitForPageLoaded();
+		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		waitForPageLoaded();
+		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
+		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
+		select.selectByIndex(2);
+		findCss("#seller_coupon_seller_coupon_value").sendKeys(value);
+		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
+		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
+		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		findCss("#seller_coupon_seller_price").sendKeys("100");
+		//go to iframe
+		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
+	                + driver.findElement(
+	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
+	    WebElement descriptionElement = findCss((".cke_wysiwyg_frame.cke_reset"));
+	    driver.switchTo().frame(descriptionElement);
+	    WebElement editable = driver.switchTo().activeElement();
+	    editable.sendKeys("Discount cart");
+	    driver.switchTo().defaultContent();//out of iframe
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
+	}
 	
 	public void CreatCartCouponExceptSomeProduct(String value,String nameProduct) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
@@ -277,6 +302,102 @@ public class Common {
 		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
 		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
 		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		findCss("#seller_coupon_seller_price").sendKeys("100");
+		//go to iframe
+		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
+	                + driver.findElement(
+	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
+	    WebElement descriptionElement = findCss((".cke_wysiwyg_frame.cke_reset"));
+	    driver.switchTo().frame(descriptionElement);
+	    WebElement editable = driver.switchTo().activeElement();
+	    editable.sendKeys("Discount cart - thuoc doc not discount");
+	    driver.switchTo().defaultContent();//out of iframe
+	    clickButtonCss("#new_seller_coupon_seller");
+	    Thread.sleep(1000);
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
+	}
+	
+	public void CreatCartCouponPercentExceptSomeProduct(String value,String nameProduct) throws InterruptedException, ParseException {
+		logInSellerPage("rosa.linky@gmail.com","123456");
+		waitForPageLoaded();
+		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		waitForPageLoaded();
+		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
+		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
+		select.selectByIndex(2);
+		findCss("#seller_coupon_seller_coupon_value").sendKeys(value);	
+		clickButtonCss(".select2-selection.select2-selection--multiple");
+		findXpath("//li[contains(text(),'"+nameProduct+"')]").click();
+		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
+		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
+		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		findCss("#seller_coupon_seller_price").sendKeys("100");
+		//go to iframe
+		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
+	                + driver.findElement(
+	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
+	    WebElement descriptionElement = findCss((".cke_wysiwyg_frame.cke_reset"));
+	    driver.switchTo().frame(descriptionElement);
+	    WebElement editable = driver.switchTo().activeElement();
+	    editable.sendKeys("Discount cart - thuoc doc not discount");
+	    driver.switchTo().defaultContent();//out of iframe
+	    clickButtonCss("#new_seller_coupon_seller");
+	    Thread.sleep(1000);
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
+	}
+	
+	public void CreatProductCoupon(String value,String nameProduct) throws InterruptedException, ParseException {
+		logInSellerPage("rosa.linky@gmail.com","123456");
+		waitForPageLoaded();
+		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		waitForPageLoaded();
+		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
+		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
+		select.selectByIndex(1);
+		findCss("#seller_coupon_seller_coupon_value").sendKeys(value);
+		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
+		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
+		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		//choose product
+		clickButtonCss("#new_seller_coupon_seller");//bo het pop up
+		clickButtonCss(".select2-selection.select2-selection--multiple");
+		findXpath("//li[contains(text(),'"+nameProduct+"')]").click();
+		
+		findCss("#seller_coupon_seller_price").sendKeys("100");
+		//go to iframe
+		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
+	                + driver.findElement(
+	                        By.cssSelector(".cke_wysiwyg_frame.cke_reset")).getLocation().y + ")");
+	    WebElement descriptionElement = findCss((".cke_wysiwyg_frame.cke_reset"));
+	    driver.switchTo().frame(descriptionElement);
+	    WebElement editable = driver.switchTo().activeElement();
+	    editable.sendKeys("Discount cart");
+	    driver.switchTo().defaultContent();//out of iframe
+	    clickButtonCss("#new_seller_coupon_seller");
+	    Thread.sleep(1000);
+	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
+
+	}
+	
+	public void CreatProductCouponPercent(String value,String nameProduct) throws InterruptedException, ParseException {
+		logInSellerPage("rosa.linky@gmail.com","123456");
+		waitForPageLoaded();
+		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		waitForPageLoaded();
+		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
+		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
+		select.selectByIndex(0);
+		findCss("#seller_coupon_seller_coupon_value").sendKeys(value);
+		findCss(".input-group.half #datepicker-start-coupon").sendKeys(getCurrentDate());
+		findCss(".input-group.half #datepicker-end-coupon").sendKeys(getEndDate());
+		findCss("#seller_coupon_seller_number_apply").sendKeys("10");
+		//choose product
+		clickButtonCss("#new_seller_coupon_seller");//bo het pop up
+		clickButtonCss(".select2-selection.select2-selection--multiple");
+		findXpath("//li[contains(text(),'"+nameProduct+"')]").click();
+		
 		findCss("#seller_coupon_seller_price").sendKeys("100");
 		//go to iframe
 		 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0,"
