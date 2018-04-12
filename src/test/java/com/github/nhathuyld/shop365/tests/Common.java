@@ -256,8 +256,6 @@ public class Common {
 	    Thread.sleep(3000);    
 	    clickButtonCss("#new_seller_coupon_seller > div.actions > input");
 
-	
-	   
 
 	
 	}
