@@ -7,26 +7,30 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertyReader {
-	private PropertyReader() {
-
-	}
+    private static Properties prop;
+    private PropertyReader() {
+    }
 
 	public static String getValue(String key) {
-
-		Properties prop = new Properties();
+        String filePath = "src" + File.separator + "config.properties";
 		InputStream input = null;
-
 		try {
-			
-			String filePath = "src" + File.separator + "config.properties";
-			input = new FileInputStream(filePath);
-			prop.load(input);
-			if(key == null) {
-				return prop.values().toString();
+			if(PropertyReader.prop == null){
+				System.out.println("Load properties again and again");
+				PropertyReader.prop = new Properties();
+				input = new FileInputStream(filePath);
+				prop.load(input);
+			}else{
+				System.out.println("You are lucky, I loaded the properties for you.");
 			}
-			return prop.getProperty(key);
+			String value = PropertyReader.prop.getProperty(key);
+			if(key == null || value == null) {
+				System.err.println("Existing values are : " +  prop.values().toString());
+			}
+			return value;
 
 		} catch (IOException ex) {
+			System.out.println("Can not find :" + filePath + ".Please create the file from config.properties.example");
 			ex.printStackTrace();
 		} finally {
 			if (input != null) {

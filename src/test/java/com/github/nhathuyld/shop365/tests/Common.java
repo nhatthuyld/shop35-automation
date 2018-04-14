@@ -1,11 +1,12 @@
 package com.github.nhathuyld.shop365.tests;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+
+import com.github.nhatthuyld.shop365.utils.PropertyReader;
 
 import org.junit.Assert;
 import org.openqa.selenium.Alert;
@@ -17,9 +18,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class Common {
@@ -214,7 +214,7 @@ public class Common {
 	}
 	
 	public void logInSellerPage(String name,String pass) throws InterruptedException {
-		driver.get("http://shop365.qrmartdemo.info/login/seller");
+		driver.get(PropertyReader.getValue("webUrl").concat("login/seller"));
 		waitForPageLoaded();
 		findCss("#email").sendKeys(name);
 		findCss("#password").sendKeys(pass);
@@ -240,7 +240,7 @@ public class Common {
 	public void CreatCartCoupon(String value) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
@@ -265,7 +265,7 @@ public class Common {
 	public void CreatCartCouponPercent(String value) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
@@ -291,7 +291,7 @@ public class Common {
 	public void CreatCartCouponExceptSomeProduct(String value,String nameProduct) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
@@ -319,9 +319,9 @@ public class Common {
 	}
 	
 	public void CreatCartCouponPercentExceptSomeProduct(String value,String nameProduct) throws InterruptedException, ParseException {
-		logInSellerPage("rosa.linky@gmail.com","123456");
+		logInSellerPage(PropertyReader.getValue("sellerEmail"),PropertyReader.getValue("sellerPassword"));
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
@@ -351,7 +351,7 @@ public class Common {
 	public void CreatProductCoupon(String value,String nameProduct) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));
@@ -384,7 +384,7 @@ public class Common {
 	public void CreatProductCouponPercent(String value,String nameProduct) throws InterruptedException, ParseException {
 		logInSellerPage("rosa.linky@gmail.com","123456");
 		waitForPageLoaded();
-		driver.get("http://shop365.qrmartdemo.info/seller/coupon_sellers/new");
+		driver.get(PropertyReader.getValue("webUrl").concat("seller/coupon_sellers/new"));
 		waitForPageLoaded();
 		findCss("#seller_coupon_seller_coupon_name").sendKeys("KM Seller Thuy");
 		Select select = new Select(driver.findElement(By.cssSelector("#seller_coupon_seller_coupon_type")));

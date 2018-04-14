@@ -1,0 +1,7 @@
+chromedriver=some\where\chromedriver.exe
+webUrl=http://example.com/
+userEmail=abc@zyz
+userPassword=qwerty
+sellerEmail=seller@yahoo
+sellerPassword=seller-pass
+user2Email=

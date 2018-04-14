@@ -2,33 +2,18 @@ package com.github.nhathuyld.shop365.tests;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.internal.FindsByCssSelector;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.github.nhathuyld.shop365.model.Product;
 import com.github.nhatthuyld.shop365.utils.PropertyReader;
 
-//import com.examples.seleniumrc.util.PropertyReader;
-
-import org.openqa.selenium.JavascriptExecutor;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 public class OrderingTest {
 
@@ -53,7 +38,7 @@ public class OrderingTest {
 
 	// @After
 	// public void tearDown() throws Exception {
-	// driver.quit();
+	// 	driver.quit();
 	// }
 	
 	 ArrayList<Product> listProductSellerX = new ArrayList<Product>();
@@ -82,12 +67,11 @@ public class OrderingTest {
 	//	getInfoInvoice();
 //		
 	}
-	
 	public void Login() throws InterruptedException {
 		
-		driver.get("http://shop365.qrmartdemo.info/login.html");
-		this.common.findCss("#emmail_login").sendKeys("nhatthuyadvn@gmail.com");
-		this.common.findCss("#password_login").sendKeys("123456");
+		driver.get(PropertyReader.getValue("webUrl").concat("login.html"));
+		this.common.findCss("#emmail_login").sendKeys(PropertyReader.getValue("userEmail"));
+		this.common.findCss("#password_login").sendKeys(PropertyReader.getValue("userPassword"));
 		this.common.clickButtonCss(".fa.fa-lock");
 	}
 	
@@ -109,18 +93,18 @@ public class OrderingTest {
 	
 	public void addProduct() throws InterruptedException {
 		
-		driver.get("http://shop365.qrmartdemo.info/products/du-du-0001.html");
+		driver.get(PropertyReader.getValue("webUrl").concat("products/du-du-0001.html"));
 		Thread.sleep(4000);
 		Book("10");
-		driver.get("http://shop365.qrmartdemo.info/products/tao-xanh-0006.html");
+		driver.get(PropertyReader.getValue("webUrl").concat("products/tao-xanh-0006.html"));
 		Thread.sleep(4000);
 		Book("5");
 		
-		driver.get("http://shop365.qrmartdemo.info/products/tao-0005.html");
+		driver.get(PropertyReader.getValue("webUrl").concat("products/tao-0005.html"));
 		Thread.sleep(4000);
 		Book("3");
 		
-		driver.get("http://shop365.qrmartdemo.info/checkout-finish.html");
+		driver.get(PropertyReader.getValue("webUrl").concat("checkout-finish.html"));
 			
 		
 	}
