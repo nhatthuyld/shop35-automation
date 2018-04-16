@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import com.github.nhathuyld.shop365.model.Product;
+import com.github.nhathuyld.shop365.model.Seller;
 import com.github.nhatthuyld.shop365.utils.PropertyReader;
 
 import org.junit.After;
