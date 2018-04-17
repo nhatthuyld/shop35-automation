@@ -44,26 +44,28 @@ public class OrderingTest {
 	
 	 ArrayList<Product> listProductSellerX = new ArrayList<Product>();
 	 ArrayList<Seller> listSeller = new ArrayList<Seller>();
+	 
+	 
 
 	@Test
 	public void BookingCasual() throws InterruptedException, ParseException {
 		//this.common.CreatCartCouponExceptSomeProduct("15","thuoc doc");
 		//this.common.CreatCartCoupon("14");
-		this.common.CreatProductCouponPercent("15","thuoc doc");
+		//this.common.CreatProductCouponPercent("15","thuoc doc");
 		
-//		Login();
+		Login();
 //		
-//		addProduct();
+		addProduct();
 //		getCoupon("#block-seller-95");
 //		
-//		checkOut();
+		checkOut();
 		
-//		checkProductSeller("#block-seller-83",0);
-//		checkProductSeller("#block-seller-65",1);
-//		checkTotalInvoice();
+		//checkProductSeller("#block-seller-83",0);
+		checkProductSeller("#block-seller-65",1);
+		checkTotalInvoice();
 		
 		//PaybyPaypal();
-	//	PaybyCreditcard();
+		PaybyCreditcard();
 		
 	//	getInfoInvoice();
 //		
@@ -127,7 +129,7 @@ public class OrderingTest {
 		p.xPointShop = this.common.findPointShop();
 		p.shippingfee = this.common.findShippingFee();
 		p.quantity = Double.parseDouble(this.common.getAttributeElement("#qty1","value"));
-		
+		p.shippingName = this.common.findShippingMethod();
 		listProductSellerX.add(p);
 	}
 	
@@ -163,9 +165,6 @@ public class OrderingTest {
 		
 		Alert alertDate = driver.switchTo().alert();
 		alertDate.accept();
-		
-	}
-	public void getInfoOneProductSellerCheckOutCart(String idSeller,int i, int orderSeller) throws InterruptedException {
 		
 	}
 	
@@ -272,6 +271,32 @@ public class OrderingTest {
 		Thread.sleep(1000);
 	
 	}
-	
+	public void checkDetailpage() throws InterruptedException {
+		this.common.clickButtonCss(".btn.btn-style-3");
+		this.common.waitForPageLoaded();
+		Assert.assertEquals("Fail-id invoice -detail page ",
+				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(1) span").getText().replace("#", "").equals(idInvoice));
+		Assert.assertEquals("Fail-date -detail page ",
+				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(2) span").getText().equals(this.common.getCurrentDate()));
+		Assert.assertEquals("Fail-payment -detail page ",
+				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(3) span").getText().equals(paymentMethod));
+		
+		///detail abc
+		
+		int k = 2;
+		Product p;
+		String s;
+		for(int i = 0; i <= listSeller.size();i++)
+			for(int j = 0;j <= listSeller.get(i).numberproduct;j++)
+			{	
+				Seller X = listSeller.get(i);
+				s = this.common.findCss("tbody tr:nth-child("+Integer.toString(k)+") td:nth-child(2)").getAttribute("innerHTML");
+				Assert.assertEquals("Fail-name product -detail page ",
+						Boolean.TRUE,s.split("<br>")[0].trim().equals());
+				
+				k++;
+			}
+		k++;	
+	}
 	
 }

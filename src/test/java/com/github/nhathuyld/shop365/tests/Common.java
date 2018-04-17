@@ -202,6 +202,11 @@ public class Common {
 			return point;
 			return findAndGetNumericDouble(".label-point");
 	}
+	
+	public String  findShippingMethod() throws InterruptedException {
+		String s = findCss("#select-shipping-method option:nth-child(1)").getText()+" : "+findCss("#select-shipping-method option:nth-child(2)").getText();
+		return s;
+	}
 
 	public int getRowTable(String s) throws InterruptedException {
 		List<WebElement> rows = driver.findElements(By.cssSelector(s));
