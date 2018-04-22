@@ -72,6 +72,16 @@ public class Common {
 			return null;
 		}
 	}
+	public List<WebElement> findElementsByCss(String idButton) throws InterruptedException {
+		try {
+			List<WebElement> elemes = driver.findElements(By.cssSelector(idButton));
+			return elemes;
+		} catch (Exception ex) {
+			System.out.println("Not found for find button:" + idButton);
+			//System.exit(0);
+			return null;
+		}
+	}
 	
 	public String getAttributeElement(String s, String attb) throws InterruptedException {
 		WebElement e = driver.findElement(By.cssSelector(s));

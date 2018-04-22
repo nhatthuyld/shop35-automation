@@ -10,7 +10,7 @@ public class Seller {
 	public Double  total;
 	public int pointEarnSellerandShop;
 	public String sellerName;
-	public int numberproduct;
+	public String idSeller;
 	public List<Product> products;
 	
 }

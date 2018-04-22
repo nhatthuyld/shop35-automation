@@ -2,6 +2,7 @@ package com.github.nhathuyld.shop365.tests;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.github.nhathuyld.shop365.model.Product;
 import com.github.nhathuyld.shop365.model.Seller;
@@ -37,12 +38,12 @@ public class OrderingTest {
 		
 	}
 
-	// @After
-	// public void tearDown() throws Exception {
-	// 	driver.quit();
-	// }
+	 @After
+	 public void tearDown() throws Exception {
+	 	driver.quit();
+	 }
 	
-	 ArrayList<Product> listProductSellerX = new ArrayList<Product>();
+	 
 	 ArrayList<Seller> listSeller = new ArrayList<Seller>();
 	 
 	 
@@ -54,20 +55,27 @@ public class OrderingTest {
 		//this.common.CreatProductCouponPercent("15","thuoc doc");
 		
 		Login();
-//		
-		addProduct();
+		Seller SellerA = new Seller();
+		SellerA.idSeller = "#block-seller-95";
+		addProductOneSeller(SellerA,"2","products/du-du-0001.html");
+		
+		
+		listSeller.add(SellerA);		
+		driver.get(PropertyReader.getValue("webUrl").concat("checkout-finish.html"));
+		
 //		getCoupon("#block-seller-95");
 //		
 		checkOut();
 		
-		//checkProductSeller("#block-seller-83",0);
-		checkProductSeller("#block-seller-65",1);
-		checkTotalInvoice();
+		
+		checkCheckOutCart();
 		
 		//PaybyPaypal();
 		PaybyCreditcard();
 		
 	//	getInfoInvoice();
+		System.out.println("done");
+		
 //		
 	}
 	public void Login() throws InterruptedException {
@@ -78,38 +86,24 @@ public class OrderingTest {
 		this.common.clickButtonCss(".fa.fa-lock");
 	}
 	
-	public void Book(String quantity) throws InterruptedException {
+	public void Book(String quantity,Seller SellerX) throws InterruptedException {
 
 		this.common.findCss("[type='number']").clear();
 		this.common.findCss("[type='number']").sendKeys(quantity);
-		this.common.clickButtonCss(".shipping_options div [type='radio']");
-		//Thread.sleep(2000);
-//		Select select = new Select(driver.findElement(By.cssSelector(".select2-results__options")));
-//		select.selectByIndex(2);
-			
+		this.common.clickButtonCss(".shipping_options div [type='radio']");	
 		this.common.waitForElementAppear(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-selection__arrow");
 		this.common.clickButtonCss(".select2-results__options li:nth-child(2)");
-		getInfoProduct(listProductSellerX);
+		getInfoProduct(SellerX);
 		this.common.clickButtonCss("#add-to-cart");
 	}
 	
-	public void addProduct() throws InterruptedException {
-		
-		driver.get(PropertyReader.getValue("webUrl").concat("products/du-du-0001.html"));
-		Thread.sleep(4000);
-		Book("10");
-		driver.get(PropertyReader.getValue("webUrl").concat("products/tao-xanh-0006.html"));
-		Thread.sleep(4000);
-		Book("5");
-		
-		driver.get(PropertyReader.getValue("webUrl").concat("products/tao-0005.html"));
-		Thread.sleep(4000);
-		Book("3");
-		
-		driver.get(PropertyReader.getValue("webUrl").concat("checkout-finish.html"));
-			
-		
+	
+	public void addProductOneSeller(Seller SellerX,String quantity,String linkProduct) throws InterruptedException {
+		driver.get(PropertyReader.getValue("webUrl").concat(linkProduct));
+		this.common.waitForPageLoaded();
+		Book(quantity,SellerX);	
+		SellerX.sellerName = this.common.findCss(".seller-content div h2").getText();
 	}
 	public void checkOut() throws InterruptedException {
 		
@@ -120,7 +114,7 @@ public class OrderingTest {
 		
 	}
 	
-	public void getInfoProduct(ArrayList<Product> listProductSellerX) throws InterruptedException {
+	public void getInfoProduct(Seller SellerX) throws InterruptedException {
 		
 		Product p = new Product();
 		p.name = this.common.findCss(".page-title").getText();
@@ -130,7 +124,7 @@ public class OrderingTest {
 		p.shippingfee = this.common.findShippingFee();
 		p.quantity = Double.parseDouble(this.common.getAttributeElement("#qty1","value"));
 		p.shippingName = this.common.findShippingMethod();
-		listProductSellerX.add(p);
+		SellerX.products.add(p);
 	}
 	
 	
@@ -168,7 +162,8 @@ public class OrderingTest {
 		
 	}
 	
-	public void checkOneProductSellerCheckOutCart(String idSeller,int i, int orderSeller) throws InterruptedException {
+	public void checkOneProductSellerCheckOutCart(int i, int orderSeller) throws InterruptedException {
+		String idSeller = listSeller.get(orderSeller).idSeller;
 		String order = Integer.toString(i+2);
 		
 		String name = this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(2) a").getText();
@@ -188,38 +183,31 @@ public class OrderingTest {
 		
 		Double totalProductPrice =  Double.parseDouble(this.common.findCss(idSeller+" tr:nth-child("+order+") td:nth-child(6) span").getText().replace("$",""));
 		
-		this.common.equalString(name, listProductSellerX.get(i).name);	
-		this.common.equalString(sku, listProductSellerX.get(i).sku);
-		this.common.equalString(shippingname, listProductSellerX.get(i).shippingName);
-		this.common.compareDouble(price, listProductSellerX.get(i).price);
-		this.common.compareDouble(quantity, listProductSellerX.get(i).quantity);
-		this.common.compareInt(pointProduct,(int)listProductSellerX.get(i).price);
-		this.common.compareDouble(xPoint-1, listProductSellerX.get(i).xPointShop);
+		this.common.equalString(name, listSeller.get(orderSeller).products.get(i).name);	
+		this.common.equalString(sku, listSeller.get(orderSeller).products.get(i).sku);
+		this.common.equalString(shippingname, listSeller.get(orderSeller).products.get(i).shippingName);
+		this.common.compareDouble(price, listSeller.get(orderSeller).products.get(i).price);
+		this.common.compareDouble(quantity, listSeller.get(orderSeller).products.get(i).quantity);
+		this.common.compareInt(pointProduct,(int)listSeller.get(orderSeller).products.get(i).price);
+		this.common.compareDouble(xPoint-1, listSeller.get(orderSeller).products.get(i).xPointShop);
 		this.common.compareDouble(price*quantity,totalProductPrice);
 		
 		listSeller.get(orderSeller).sellerName = this.common.findCss(idSeller+" span").getText();
 		listSeller.get(orderSeller).subtotal += totalProductPrice;
-		listSeller.get(orderSeller).shippingFee += listProductSellerX.get(i).shippingfee;
+		listSeller.get(orderSeller).shippingFee += listSeller.get(orderSeller).products.get(i).shippingfee;
 		listSeller.get(orderSeller).pointEarnSellerandShop += pointProduct * xPoint * quantity; 
 		
 	}
 	
-	public void checkProductSeller(String idSeller, int orderSeller) throws InterruptedException {
-		Seller X = new Seller();
-		X.subtotal = 0.0;
-		X.shippingFee = 0.0;
-		X.pointEarnSellerandShop = 0;
-		X.discount = this.common.findDiscount(idSeller);
-		
-		listSeller.add(X);
-		listSeller.get(orderSeller).numberproduct = this.common.getNumberProduct(idSeller);
-		for(int i = 0; i <= listSeller.get(orderSeller).numberproduct-1; i++)
+	public void checkProductSeller( int orderSeller) throws InterruptedException {
+		String idSeller = listSeller.get(orderSeller).idSeller;
+		for(int i = 0; i < listSeller.get(orderSeller).products.size(); i++)
 		{
-			checkOneProductSellerCheckOutCart(idSeller, i, orderSeller);
+			checkOneProductSellerCheckOutCart(i,orderSeller);
 		}
 	
 		Assert.assertEquals("Fail-check items of seller ", Boolean.TRUE,
-				listSeller.get(orderSeller).numberproduct == this.common.findAndGetNumeric(idSeller+" .count-item-seller"));
+				listSeller.get(orderSeller).products.size() == this.common.findAndGetNumeric(idSeller+" .count-item-seller"));
 		
 		Assert.assertEquals("Fail-check point earn of seller ", Boolean.TRUE,
 				listSeller.get(orderSeller).pointEarnSellerandShop == this.common.findAndGetNumeric(idSeller+"  .text-right"));
@@ -237,6 +225,18 @@ public class OrderingTest {
 		Assert.assertEquals("Fail-check total of seller ", Boolean.TRUE,
 				listSeller.get(orderSeller).total.equals(this.common.findAndGetNumericDouble(idSeller+" tfoot tr:nth-child(3) td:nth-child(2)")));	
 		
+	}
+	
+	public void checkCheckOutCart() throws InterruptedException {
+		for(int i=0; i<listSeller.size(); i++)
+		{
+			listSeller.get(i).subtotal = 0.0;
+			listSeller.get(i).shippingFee = 0.0;
+			listSeller.get(i).pointEarnSellerandShop = 0;
+			listSeller.get(i).discount = this.common.findDiscount(listSeller.get(i).idSeller);
+			checkProductSeller(i);
+		}
+		checkTotalInvoice();
 	}
 	
 	public void checkTotalInvoice() throws InterruptedException {
@@ -271,32 +271,57 @@ public class OrderingTest {
 		Thread.sleep(1000);
 	
 	}
-	public void checkDetailpage() throws InterruptedException {
-		this.common.clickButtonCss(".btn.btn-style-3");
-		this.common.waitForPageLoaded();
-		Assert.assertEquals("Fail-id invoice -detail page ",
-				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(1) span").getText().replace("#", "").equals(idInvoice));
-		Assert.assertEquals("Fail-date -detail page ",
-				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(2) span").getText().equals(this.common.getCurrentDate()));
-		Assert.assertEquals("Fail-payment -detail page ",
-				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(3) span").getText().equals(paymentMethod));
+//	public void checkDetailpage() throws InterruptedException {
+//		this.common.clickButtonCss(".btn.btn-style-3");
+//		this.common.waitForPageLoaded();
+//		Assert.assertEquals("Fail-id invoice -detail page ",
+//				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(1) span").getText().replace("#", "").equals(idInvoice));
+//		Assert.assertEquals("Fail-date -detail page ",
+//				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(2) span").getText().equals(this.common.getCurrentDate()));
+//		Assert.assertEquals("Fail-payment -detail page ",
+//				Boolean.TRUE,this.common.findCss(".invoice-col div:nth-child(3) span").getText().equals(paymentMethod));
+//		
+//		///detail abc
+//		
+//		int k = 2;
+//		Product p;
+//		String s;
+//		for(int i = 0; i <= listSeller.size();i++)
+//			for(int j = 0;j <= listSeller.get(i).numberproduct;j++)
+//			{	
+//				Seller X = listSeller.get(i);
+//				s = this.common.findCss("tbody tr:nth-child("+Integer.toString(k)+") td:nth-child(2)").getAttribute("innerHTML");
+//				Assert.assertEquals("Fail-name product -detail page ",
+//						Boolean.TRUE,s.split("<br>")[0].trim().equals());
+//				
+//				k++;
+//			}
+//		k++;	
+//	}
+	
+	public void checkDetailpage() {
+		List<Seller> sellers = new ArrayList<Seller>();
 		
-		///detail abc
-		
-		int k = 2;
-		Product p;
-		String s;
-		for(int i = 0; i <= listSeller.size();i++)
-			for(int j = 0;j <= listSeller.get(i).numberproduct;j++)
-			{	
-				Seller X = listSeller.get(i);
-				s = this.common.findCss("tbody tr:nth-child("+Integer.toString(k)+") td:nth-child(2)").getAttribute("innerHTML");
-				Assert.assertEquals("Fail-name product -detail page ",
-						Boolean.TRUE,s.split("<br>")[0].trim().equals());
-				
-				k++;
-			}
-		k++;	
 	}
+	
+//	public List<Seller> getSellersDetailInvoie(){
+//		List <Seller> listSeller = new ArrayList<Seller>();
+//		// parse HTML to product
+//		List<WebElement> listTR = this.common.findElementsByCss("table.invoice-table tr");
+//		for(WebElement tr : listTR) {
+//			Seller seller = null;
+//			if(tr.getAttribute("class").contains("text-left membership-points")) {
+//				seller = new Seller();
+//				seller.sellerName = tr.getText().trim();
+//			}else {
+//				Product product = new Product();
+//				seller.products.add(product);
+//			}
+//			
+//		}
+//		listSeller.add(seller);
+//		return listSeller;
+//	}
+	
 	
 }

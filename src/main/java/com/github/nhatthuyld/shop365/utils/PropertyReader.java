@@ -20,8 +20,6 @@ public class PropertyReader {
 				PropertyReader.prop = new Properties();
 				input = new FileInputStream(filePath);
 				prop.load(input);
-			}else{
-				System.out.println("You are lucky, I loaded the properties for you.");
 			}
 			String value = PropertyReader.prop.getProperty(key);
 			if(key == null || value == null) {
